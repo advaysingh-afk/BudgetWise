@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Pulse — a smooth, modern expense tracker and budget planner." />
+  <title>BudgetWise – Smart Personal Finance Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">
+          <span></span><span></span>
+        </div>
+        <div>
+          <strong>BudgetWise</strong>
+          <small>Smart Personal Finance Manager</small>
+        </div>
+      </div>
+
+      <button class="mobile-close" id="mobileClose" aria-label="Close navigation">×</button>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <p class="nav-label">Workspace</p>
+        <button class="nav-item active" data-view="overview"><span class="nav-icon">⌂</span>Overview</button>
+        <button class="nav-item" data-view="transactions"><span class="nav-icon">↕</span>Transactions</button>
+        <button class="nav-item" data-view="expenses"><span class="nav-icon">◒</span>Expenses</button>
+        <button class="nav-item" data-view="budgets"><span class="nav-icon">▤</span>Budgets</button>
+        <button class="nav-item" data-view="accounts"><span class="nav-icon">◫</span>Accounts</button>
+
+        <p class="nav-label nav-label-gap">Planning</p>
+        <button class="nav-item" data-view="recurring"><span class="nav-icon">↻</span>Recurring</button>
+        <button class="nav-item" data-view="goals"><span class="nav-icon">◇</span>Saving goals</button>
+        <button class="nav-item" data-view="reports"><span class="nav-icon">▥</span>Reports</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button class="nav-item" data-action="export"><span class="nav-icon">⇩</span>Export data</button>
+        <button class="nav-item" data-action="reset"><span class="nav-icon">↺</span>Reset demo</button>
+        <button class="profile-card" id="sidebarProfile" type="button" aria-label="Open profile">
+          <div class="avatar">AS</div>
+          <div class="profile-text">
+            <strong>Advay Singh</strong>
+            <span>ID: 2500032011</span>
+          </div>
+          <span class="status-dot"></span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="title-stack">
+          <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
+          <div>
+            <p class="eyebrow">PERSONAL FINANCE</p>
+            <h1 id="pageTitle">Overview</h1>
+          </div>
+        </div>
+        <div class="top-actions">
+          <div class="month-select">
+            <span>Period</span>
+            <select id="periodSelect" aria-label="Period"></select>
+          </div>
+          <button class="icon-btn" id="notificationBtn" aria-label="Notifications">
+            ♧<i id="notificationBadge">3</i>
+          </button>
+          <button class="avatar avatar-top">AS</button>
+          <button class="primary-btn" id="addTopBtn">+ Add transaction</button>
+        </div>
+      </header>
+
+      <div id="viewRoot"></div>
+    </main>
+  </div>
+
+  <!-- Transaction modal -->
+  <div class="modal-backdrop hidden" id="transactionModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="transactionModalTitle">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">QUICK ENTRY</p>
+          <h2 id="transactionModalTitle">Add transaction</h2>
+        </div>
+        <button class="icon-btn close-modal" data-close="transactionModal">×</button>
+      </div>
+
+      <form id="transactionForm">
+        <div class="type-toggle">
+          <label><input type="radio" name="kind" value="expense" checked><span>Expense</span></label>
+          <label><input type="radio" name="kind" value="income"><span>Income</span></label>
+        </div>
+
+        <div class="amount-wrap">
+          <span>₹</span>
+          <input id="txAmount" name="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required />
+        </div>
+
+        <div class="form-grid">
+          <label>
+            <span>Description</span>
+            <input id="txName" name="name" placeholder="e.g. Grocery run" required maxlength="60" />
+          </label>
+          <label>
+            <span>Category</span>
+            <select id="txCategory" name="category"></select>
+          </label>
+          <label>
+            <span>Account</span>
+            <select id="txAccount" name="account"></select>
+          </label>
+          <label>
+            <span>Date</span>
+            <input id="txDate" name="date" type="date" required />
+          </label>
+        </div>
+
+        <label>
+          <span>Note <em>optional</em></span>
+          <textarea id="txNote" name="note" rows="3" placeholder="Add a little context..."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" class="ghost-btn close-modal" data-close="transactionModal">Cancel</button>
+          <button type="submit" class="primary-btn">Save transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Generic modal -->
+  <div class="modal-backdrop hidden" id="genericModal">
+    <div class="modal" id="genericModalContent"></div>
+  </div>
+
+  <!-- Profile modal -->
+  <div class="modal-backdrop hidden" id="profileModal">
+    <div class="modal profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">ACCOUNT PROFILE</p>
+          <h2 id="profileModalTitle">Advay Singh</h2>
+        </div>
+        <button class="icon-btn close-modal" data-close="profileModal">×</button>
+      </div>
+      <div class="profile-hero">
+        <div class="profile-avatar-large">AS</div>
+        <div>
+          <h3>Advay Singh</h3>
+          <p>Smart Personal Finance Manager</p>
+        </div>
+      </div>
+      <div class="profile-info-grid">
+        <div class="profile-info-item"><span>NAME</span><strong>Advay Singh</strong></div>
+        <div class="profile-info-item"><span>ID NUMBER</span><strong>2500032011</strong></div>
+        <div class="profile-info-item"><span>WORKSPACE</span><strong>Personal Finance</strong></div>
+        <div class="profile-info-item"><span>DATA MODE</span><strong>Local &amp; private</strong></div>
+      </div>
+      <div class="modal-actions">
+        <button class="ghost-btn close-modal" data-close="profileModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
